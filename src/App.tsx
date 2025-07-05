@@ -13,10 +13,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        
-        <ShowComments comments={comments} />
-        
+        <h1>Comments</h1>
       </header>
+      <main className="App-body">
+        <ShowComments comments={comments} />
+      </main>
     </div>
   );
 }

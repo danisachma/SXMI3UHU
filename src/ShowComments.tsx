@@ -32,7 +32,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
   return (
     <div>
       <h1>Comments</h1>
-      <form onSubmit={handleAddComment} style={{ marginBottom: '1em' }}>
+      <form onSubmit={handleAddComment} className="comment-form">
         <input
           type="text"
           placeholder="Your name"
@@ -40,8 +40,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
           onChange={e => setAuthor(e.target.value)}
           required
         />
-        <input
-          type="text"
+        <textarea
           placeholder="Your comment"
           value={text}
           onChange={e => setText(e.target.value)}

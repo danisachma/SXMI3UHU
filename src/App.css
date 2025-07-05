@@ -1,5 +1,15 @@
+/* General app styles */
+body {
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  background: #f6f8fa;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
 .App {
-  text-align: center;
+  min-height: 100vh;
+  background: #f6f8fa;
 }
 
 .App-logo {
@@ -14,14 +24,15 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background: #f6f8fa;
+  color: #222;
+  width: 100%;
+  padding: 2em 0 0.5em 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  box-shadow: none;
 }
 
 .App-link {
@@ -37,6 +48,15 @@
   }
 }
 
+.App-body {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2em 1em 3em 1em;
+  background: #f6f8fa;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 .comments-list {
   list-style: none;
   padding: 0;
@@ -50,4 +70,49 @@
   margin-bottom: 0.75em;
   background: transparent;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin-bottom: 1em;
+  max-width: 100%;
+  box-sizing: border-box;
+  align-items: flex-start;
+}
+
+.comment-form input[type="text"],
+.comment-form textarea {
+  font-size: 1.1em;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  box-sizing: border-box;
+}
+
+.comment-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.comment-form button[type="submit"] {
+  align-self: flex-start;
+  max-width: 160px;
+  font-size: 1.1em;
+  padding: 0.3em 1.5em;
+  border-radius: 6px;
+  border: none;
+  background: #61dafb;
+  color: #222;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.comment-form button[type="submit"]:hover {
+  background: #21a1f3;
 }
