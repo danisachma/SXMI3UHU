@@ -1,23 +1,21 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import ShowComments from './ShowComments';
 
 function App() {
+  const comments = [
+    { id: 1, author: 'Alice', text: 'Great project!' },
+    { id: 2, author: 'Bob', text: 'Looking forward to more features.' },
+    { id: 3, author: 'Charlie', text: 'Nice UI!' }
+  ];
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        
+        <ShowComments comments={comments} />
+        
       </header>
     </div>
   );
