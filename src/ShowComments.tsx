@@ -22,9 +22,10 @@ function isValidUsername(name: string) {
   return !!name && !/\s/.test(name);
 }
 
-function sanitizeInput(str: string, maxLength: number = 300) {
+function sanitizeInput(str: string, maxLength = 300) {
   // Remove control characters except newlines, trim, and limit length
-  return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim().slice(0, maxLength);
+  // eslint-disable-next-line no-control-regex
+  return str.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').trim().slice(0, maxLength);
 }
 
 function commentsChanged(newComments: CommentType[], currentComments: CommentType[]): boolean {
