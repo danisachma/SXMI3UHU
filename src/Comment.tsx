@@ -5,10 +5,11 @@ interface CommentProps {
   text: string;
   onDelete?: () => void;
   onReply?: (reply: { author: string; text: string }) => void;
+  onDeleteReply?: (replyIdx: number) => void;
   replies?: { author: string; text: string }[];
 }
 
-const Comment: React.FC<CommentProps> = ({ author, text, onDelete, onReply, replies = [] }) => {
+const Comment: React.FC<CommentProps> = ({ author, text, onDelete, onReply, onDeleteReply, replies = [] }) => {
   const [showReply, setShowReply] = useState(false);
   const [replyAuthor, setReplyAuthor] = useState('');
   const [replyText, setReplyText] = useState('');
@@ -58,6 +59,16 @@ const Comment: React.FC<CommentProps> = ({ author, text, onDelete, onReply, repl
           {replies.map((reply, idx) => (
             <li key={idx} className="reply-box">
               <strong>{reply.author}:</strong> {reply.text}
+              {onDeleteReply && (
+                <button
+                  className="delete-comment-btn delete-reply-btn"
+                  style={{ fontSize: '0.8em', padding: '2px 6px', marginLeft: '0.5em' }}
+                  onClick={() => onDeleteReply(idx)}
+                  type="button"
+                >
+                  Delete
+                </button>
+              )}
             </li>
           ))}
         </ul>

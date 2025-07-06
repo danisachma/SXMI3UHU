@@ -80,6 +80,16 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     ));
   };
 
+  const handleDeleteReply = (commentId: number, replyIdx: number) => {
+    setCommentList((commentList: CommentType[]) =>
+      commentList.map((comment: CommentType) => {
+        if (comment.id !== commentId) return comment;
+        const newReplies = (comment.replies || []).filter((_, idx: number) => idx !== replyIdx);
+        return { ...comment, replies: newReplies };
+      })
+    );
+  };
+
   return (
     <div>
       <h1>Comments</h1>
@@ -100,7 +110,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
         <button type="submit">Add Comment</button>
       </form>
       <ul className="comments-list">
-        {commentList.map(comment => (
+        {commentList.map((comment: CommentType) => (
           <Comment
             key={comment.id}
             author={comment.author}
@@ -108,6 +118,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
             onDelete={() => handleDeleteComment(comment.id)}
             onReply={reply => handleReplyToComment(comment.id, reply)}
             replies={comment.replies || []}
+            onDeleteReply={(replyIdx: number) => handleDeleteReply(comment.id, replyIdx)}
           />
         ))}
       </ul>
