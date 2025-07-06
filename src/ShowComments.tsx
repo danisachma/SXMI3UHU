@@ -5,6 +5,7 @@ interface CommentType {
   id: number;
   author: string;
   text: string;
+  replies?: { author: string; text: string }[];
 }
 
 interface ShowCommentsProps {
@@ -29,6 +30,20 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     setText('');
   };
 
+  const handleDeleteComment = (id: number) => {
+    if (window.confirm('Are you sure you want to delete this comment?')) {
+      setCommentList(commentList.filter(c => c.id !== id));
+    }
+  };
+
+  const handleReplyToComment = (id: number, reply: { author: string; text: string }) => {
+    setCommentList(commentList.map(comment =>
+      comment.id === id
+        ? { ...comment, replies: [...(comment.replies || []), reply] }
+        : comment
+    ));
+  };
+
   return (
     <div>
       <h1>Comments</h1>
@@ -50,7 +65,14 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
       </form>
       <ul className="comments-list">
         {commentList.map(comment => (
-          <Comment key={comment.id} author={comment.author} text={comment.text} />
+          <Comment
+            key={comment.id}
+            author={comment.author}
+            text={comment.text}
+            onDelete={() => handleDeleteComment(comment.id)}
+            onReply={reply => handleReplyToComment(comment.id, reply)}
+            replies={comment.replies || []}
+          />
         ))}
       </ul>
     </div>

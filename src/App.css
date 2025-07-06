@@ -116,3 +116,96 @@ body {
 .comment-form button[type="submit"]:hover {
   background: #21a1f3;
 }
+
+.delete-comment-btn {
+  margin-left: 1em;
+  background: #ffdddd;
+  color: #a00;
+  border: 1px solid #fbb;
+  border-radius: 4px;
+  padding: 0.2em 0.8em;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.delete-comment-btn:hover {
+  background: #ffb3b3;
+  color: #800;
+}
+
+.reply-comment-btn {
+  margin-left: 1em;
+  background: #e6f7ff;
+  color: #0077b6;
+  border: 1px solid #b3e0ff;
+  border-radius: 4px;
+  padding: 0.2em 0.8em;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.reply-comment-btn:hover {
+  background: #b3e0ff;
+  color: #005f87;
+}
+
+.reply-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  margin-top: 0.5em;
+  max-width: 350px;
+}
+
+.reply-form input[type="text"],
+.reply-form textarea {
+  font-size: 1.05em;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  width: 100%;
+  max-width: 350px;
+  padding: 0.4em 1em;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  box-sizing: border-box;
+}
+
+.reply-form textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.reply-form button[type="submit"] {
+  align-self: flex-start;
+  max-width: 120px;
+  font-size: 1em;
+  padding: 0.25em 1.2em;
+  border-radius: 6px;
+  border: none;
+  background: #61dafb;
+  color: #222;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.2em;
+}
+
+.reply-form button[type="submit"]:hover {
+  background: #21a1f3;
+}
+
+.replies-list {
+  list-style: none;
+  padding-left: 1.5em;
+  margin-top: 0.5em;
+}
+
+.reply-box {
+  border-left: 3px solid #b3e0ff;
+  margin-bottom: 0.5em;
+  padding-left: 0.7em;
+  font-size: 0.97em;
+  background: #f6fbff;
+  border-radius: 4px;
+}
