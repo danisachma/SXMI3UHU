@@ -27,6 +27,24 @@ function sanitizeInput(str: string, maxLength: number = 300) {
   return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim().slice(0, maxLength);
 }
 
+function commentsChanged(newComments: CommentType[], currentComments: CommentType[]): boolean {
+  if (newComments.length !== currentComments.length) return true;
+  for (let i = 0; i < newComments.length; i++) {
+    const newComment = newComments[i];
+    const currentComment = currentComments[i];
+    if (!newComment || !currentComment || newComment.id !== currentComment.id) return true;
+    const newReplies = newComment.replies || [];
+    const currentReplies = currentComment.replies || [];
+    if (newReplies.length !== currentReplies.length) return true;
+    for (let j = 0; j < newReplies.length; j++) {
+      const newReply = newReplies[j];
+      const currentReply = currentReplies[j];
+      if (newReply.author !== currentReply?.author || newReply.text !== currentReply?.text) return true;
+    }
+  }
+  return false;
+}
+
 const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
   const [commentList, setCommentList] = useState<CommentType[]>(comments);
   const [author, setAuthor] = useState('');
@@ -44,24 +62,11 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       getAllComments().then(dbComments => {
-        // Compare not only by id/length, but also by replies content
-        const isDifferent =
-          dbComments.length !== commentList.length ||
-          dbComments.some((c, i) => {
-            const current = commentList[i];
-            if (!current || c.id !== current.id) return true;
-            const cReplies = c.replies || [];
-            const currentReplies = current.replies || [];
-            if (cReplies.length !== currentReplies.length) return true;
-            return cReplies.some((r: { author: string; text: string }, idx: number) =>
-              r.author !== currentReplies[idx]?.author || r.text !== currentReplies[idx]?.text
-            );
-          });
-        if (isDifferent) {
+        if (commentsChanged(dbComments, commentList)) {
           setCommentList(dbComments);
         }
       });
-    }, 5000); // Poll every 5 seconds
+    }, 5000); // Poll every 5 seconds for updates
     return () => clearInterval(interval);
   }, [commentList]);
 
