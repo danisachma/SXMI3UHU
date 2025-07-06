@@ -6,6 +6,10 @@ This React App lets you write comments, reply to them and remove them
 
 In the project directory, you can run:
 
+### `npm i`
+
+to install everything
+
 ### `npm start`
 
 Runs the app in the development mode.\
@@ -18,3 +22,5 @@ You will also see any lint errors in the console.
 
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+press a if needed to run all tests
