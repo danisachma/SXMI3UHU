@@ -4,7 +4,7 @@ interface CommentProps {
   author: string;
   text: string;
   onDelete?: () => void;
-  onReply?: (reply: { author: string; text: string }, setReplyError: (msg: string | null) => void) => boolean;
+  onReply?: (reply: { author: string; text: string }, setReplyError: (msg: string | null) => void) => Promise<boolean>;
   onDeleteReply?: (replyIdx: number) => void;
   replies?: { author: string; text: string }[];
 }
@@ -21,13 +21,13 @@ const Comment: React.FC<CommentProps> = ({ author, text, onDelete, onReply, onDe
     return sanitized.length > 0 && sanitized.length <= maxLength ? sanitized : '';
   };
 
-  const handleReply = (e: React.FormEvent) => {
+  const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
     const validAuthor = validateInput(replyAuthor, 40);
     const validText = validateInput(replyText, 300);
     if (!validAuthor || !validText) return;
     if (onReply) {
-      const success = onReply({ author: validAuthor, text: validText }, setReplyError);
+      const success = await onReply({ author: validAuthor, text: validText }, setReplyError);
       if (!success) return;
     }
     setReplyAuthor('');

@@ -1,0 +1,22 @@
+# Files and code to remove (not used by the app):
+
+## src/
+- App.css (not referenced in UI, only imported in App.tsx, can remove import and file)
+- logo.svg (only imported in App.tsx, not used in UI)
+- reportWebVitals.ts (only used in index.tsx, not needed for app functionality)
+- setupTests.ts (not referenced, only for test setup)
+- react-app-env.d.ts (not needed unless using react-scripts types)
+- App.test.tsx, ShowComments.test.tsx (remove if you want no tests)
+- index.css (optional, only for base styles)
+
+## public/
+- favicon.ico, logo192.png, logo512.png (only referenced in manifest/index.html, not needed for app functionality)
+- manifest.json, robots.txt (optional, not needed for app functionality)
+
+## src/App.tsx
+- Remove import of logo.svg and App.css
+
+## src/index.tsx
+- Remove import and call to reportWebVitals
+
+# Review this list and confirm before deletion.

@@ -5,7 +5,6 @@ import ShowComments from './ShowComments';
 
 jest.mock('./db', () => ({
 	getAllComments: jest.fn(() => Promise.resolve([])),
-	saveAllComments: jest.fn(() => Promise.resolve()),
 	deleteCommentFromDB: jest.fn(() => Promise.resolve()),
 }));
 

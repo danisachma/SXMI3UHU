@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Comment from './Comment';
-import { getAllComments, saveAllComments, deleteCommentFromDB } from './db';
+import { getAllComments, deleteCommentFromDB, addCommentToDB, openDB } from './db';
 
 interface CommentType {
   id: number;
@@ -33,10 +33,6 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
   }, []);
 
   useEffect(() => {
-    saveAllComments(commentList);
-  }, [commentList]);
-
-  useEffect(() => {
     const interval = setInterval(() => {
       getAllComments().then(dbComments => {
         // Compare not only by id/length, but also by replies content
@@ -60,7 +56,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     return () => clearInterval(interval);
   }, [commentList]);
 
-  const handleAddComment = (e: React.FormEvent) => {
+  const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     const now = Date.now();
     // Remove timestamps older than 1 minute
@@ -80,6 +76,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     setCommentTimestamps([...recentTimestamps, now]);
     setAuthor('');
     setText('');
+    await addCommentToDB(newComment);
   };
 
   const handleDeleteComment = (id: number) => {
@@ -89,7 +86,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     }
   };
 
-  const handleReplyToComment = (id: number, reply: { author: string; text: string }, setReplyError: (msg: string | null) => void) => {
+  const handleReplyToComment = async (id: number, reply: { author: string; text: string }, setReplyError: (msg: string | null) => void) => {
     const now = Date.now();
     const recentReplyTimestamps = replyTimestamps.filter(ts => now - ts < REPLY_RATE_WINDOW_MS);
     if (recentReplyTimestamps.length >= REPLY_RATE_LIMIT) {
@@ -97,23 +94,39 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
       return false;
     }
     setReplyError(null);
-    setCommentList(commentList.map(comment =>
+    const updatedList = commentList.map(comment =>
       comment.id === id
         ? { ...comment, replies: [...(comment.replies || []), reply] }
         : comment
-    ));
+    );
+    setCommentList(updatedList);
     setReplyTimestamps([...recentReplyTimestamps, now]);
+    // Update only the changed comment in the DB
+    const updatedComment = updatedList.find(c => c.id === id);
+    if (updatedComment) {
+      const db = await openDB();
+      const tx = db.transaction('comments', 'readwrite');
+      const store = tx.objectStore('comments');
+      store.put(updatedComment);
+    }
     return true;
   };
 
-  const handleDeleteReply = (commentId: number, replyIdx: number) => {
-    setCommentList((commentList: CommentType[]) =>
-      commentList.map((comment: CommentType) => {
-        if (comment.id !== commentId) return comment;
-        const newReplies = (comment.replies || []).filter((_, idx: number) => idx !== replyIdx);
-        return { ...comment, replies: newReplies };
-      })
-    );
+  const handleDeleteReply = async (commentId: number, replyIdx: number) => {
+    const updatedList = commentList.map((comment: CommentType) => {
+      if (comment.id !== commentId) return comment;
+      const newReplies = (comment.replies || []).filter((_, idx: number) => idx !== replyIdx);
+      return { ...comment, replies: newReplies };
+    });
+    setCommentList(updatedList);
+    // Update only the changed comment in the DB
+    const updatedComment = updatedList.find(c => c.id === commentId);
+    if (updatedComment) {
+      const db = await openDB();
+      const tx = db.transaction('comments', 'readwrite');
+      const store = tx.objectStore('comments');
+      store.put(updatedComment);
+    }
   };
 
   return (

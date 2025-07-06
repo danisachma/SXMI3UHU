@@ -56,3 +56,14 @@ export async function deleteCommentFromDB(id: number): Promise<void> {
     tx.onerror = () => reject(tx.error);
   });
 }
+
+export async function addCommentToDB(comment: any): Promise<void> {
+  const db = await openDB();
+  return new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    store.put(comment);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
