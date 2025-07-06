@@ -66,7 +66,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
       return;
     }
     setRateLimitError(null);
-    if (!author.trim() || !text.trim()) return;
+    if (!author || !text) return;
     const newComment = {
       id: now,
       author,
@@ -94,9 +94,14 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
       return false;
     }
     setReplyError(null);
+    if (!reply.author || !reply.text) {
+      setReplyError('Invalid reply.');
+      return false;
+    }
+    setReplyError(null);
     const updatedList = commentList.map(comment =>
       comment.id === id
-        ? { ...comment, replies: [...(comment.replies || []), reply] }
+        ? { ...comment, replies: [...(comment.replies || []), { author: reply.author, text: reply.text }] }
         : comment
     );
     setCommentList(updatedList);

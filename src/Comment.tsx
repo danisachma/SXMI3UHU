@@ -15,19 +15,11 @@ const Comment: React.FC<CommentProps> = ({ author, text, onDelete, onReply, onDe
   const [replyText, setReplyText] = useState('');
   const [replyError, setReplyError] = useState<string | null>(null);
 
-  const validateInput = (value: string, maxLength: number = 100) => {
-    // Only allow printable characters, trim whitespace, and limit length
-    const sanitized = value.replace(/[^\w\s.,!?@'"-]/g, '').trim();
-    return sanitized.length > 0 && sanitized.length <= maxLength ? sanitized : '';
-  };
-
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validAuthor = validateInput(replyAuthor, 40);
-    const validText = validateInput(replyText, 300);
-    if (!validAuthor || !validText) return;
+    if (!replyAuthor || !replyText) return;
     if (onReply) {
-      const success = await onReply({ author: validAuthor, text: validText }, setReplyError);
+      const success = await onReply({ author: replyAuthor, text: replyText }, setReplyError);
       if (!success) return;
     }
     setReplyAuthor('');
@@ -52,13 +44,13 @@ const Comment: React.FC<CommentProps> = ({ author, text, onDelete, onReply, onDe
             type="text"
             placeholder="Your name"
             value={replyAuthor}
-            onChange={e => setReplyAuthor(validateInput(e.target.value, 40))}
+            onChange={e => setReplyAuthor(e.target.value)}
             required
           />
           <textarea
             placeholder="Your reply"
             value={replyText}
-            onChange={e => setReplyText(validateInput(e.target.value, 300))}
+            onChange={e => setReplyText(e.target.value)}
             required
           />
           {replyError && <div className="rate-limit-error" style={{ color: 'red', marginBottom: 8 }}>{replyError}</div>}
