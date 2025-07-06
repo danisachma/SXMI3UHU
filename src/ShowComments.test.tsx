@@ -7,8 +7,6 @@ jest.mock('./db', () => ({
   getAllComments: jest.fn(() => Promise.resolve([])),
   addCommentToDB: jest.fn(() => Promise.resolve()),
   deleteCommentFromDB: jest.fn(() => Promise.resolve()),
-  addReplyToComment: jest.fn(() => Promise.resolve()),
-  deleteReplyFromComment: jest.fn(() => Promise.resolve()),
   openDB: jest.fn(() => Promise.resolve({
     transaction: () => ({
       objectStore: () => ({
@@ -16,6 +14,7 @@ jest.mock('./db', () => ({
       }),
     }),
   })),
+  updateCommentInDB: jest.fn(() => Promise.resolve()),
 }));
 
 const mockComments = [

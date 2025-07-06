@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Comment from './Comment';
-import { getAllComments, deleteCommentFromDB, addCommentToDB, openDB } from './db';
+import { getAllComments, deleteCommentFromDB, addCommentToDB, updateCommentInDB } from './db';
 
 interface CommentType {
   id: number;
@@ -129,10 +129,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     // Update only the changed comment in the DB
     const updatedComment = updatedList.find(c => c.id === id);
     if (updatedComment) {
-      const db = await openDB();
-      const tx = db.transaction('comments', 'readwrite');
-      const store = tx.objectStore('comments');
-      store.put(updatedComment);
+      await updateCommentInDB(updatedComment);
     }
     return true;
   };
@@ -147,10 +144,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     // Update only the changed comment in the DB
     const updatedComment = updatedList.find(c => c.id === commentId);
     if (updatedComment) {
-      const db = await openDB();
-      const tx = db.transaction('comments', 'readwrite');
-      const store = tx.objectStore('comments');
-      store.put(updatedComment);
+      await updateCommentInDB(updatedComment);
     }
   };
 
