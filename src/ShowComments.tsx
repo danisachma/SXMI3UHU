@@ -18,6 +18,10 @@ const COMMENT_RATE_WINDOW_MS = 60 * 1000; // per minute
 const REPLY_RATE_LIMIT = 5; // max 5 replies
 const REPLY_RATE_WINDOW_MS = 60 * 1000; // per minute
 
+function isValidUsername(name: string) {
+  return !!name && !/\s/.test(name);
+}
+
 const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
   const [commentList, setCommentList] = useState<CommentType[]>(comments);
   const [author, setAuthor] = useState('');
@@ -67,6 +71,10 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     }
     setRateLimitError(null);
     if (!author || !text) return;
+    if (!isValidUsername(author)) {
+      setRateLimitError('Usernames cannot contain spaces.');
+      return;
+    }
     const newComment = {
       id: now,
       author,
@@ -96,6 +104,10 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     setReplyError(null);
     if (!reply.author || !reply.text) {
       setReplyError('Invalid reply.');
+      return false;
+    }
+    if (!isValidUsername(reply.author)) {
+      setReplyError('Usernames cannot contain spaces.');
       return false;
     }
     setReplyError(null);

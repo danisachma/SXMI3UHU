@@ -54,7 +54,7 @@ const Comment: React.FC<CommentProps> = ({ author, text, onDelete, onReply, onDe
             required
           />
           {replyError && <div className="rate-limit-error" style={{ color: 'red', marginBottom: 8 }}>{replyError}</div>}
-          <button type="submit" disabled={!!replyError}>Add Reply</button>
+          <button type="submit" >Add Reply</button>
         </form>
       )}
       {replies.length > 0 && (
