@@ -4,7 +4,7 @@ interface CommentProps {
   author: string;
   text: string;
   onDelete?: () => void;
-  onReply?: (reply: { author: string; text: string }) => void;
+  onReply?: (reply: { author: string; text: string }, setReplyError: (msg: string | null) => void) => boolean;
   onDeleteReply?: (replyIdx: number) => void;
   replies?: { author: string; text: string }[];
 }
@@ -13,12 +13,22 @@ const Comment: React.FC<CommentProps> = ({ author, text, onDelete, onReply, onDe
   const [showReply, setShowReply] = useState(false);
   const [replyAuthor, setReplyAuthor] = useState('');
   const [replyText, setReplyText] = useState('');
+  const [replyError, setReplyError] = useState<string | null>(null);
+
+  const validateInput = (value: string, maxLength: number = 100) => {
+    // Only allow printable characters, trim whitespace, and limit length
+    const sanitized = value.replace(/[^\w\s.,!?@'"-]/g, '').trim();
+    return sanitized.length > 0 && sanitized.length <= maxLength ? sanitized : '';
+  };
 
   const handleReply = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!replyAuthor.trim() || !replyText.trim()) return;
+    const validAuthor = validateInput(replyAuthor, 40);
+    const validText = validateInput(replyText, 300);
+    if (!validAuthor || !validText) return;
     if (onReply) {
-      onReply({ author: replyAuthor, text: replyText });
+      const success = onReply({ author: validAuthor, text: validText }, setReplyError);
+      if (!success) return;
     }
     setReplyAuthor('');
     setReplyText('');
@@ -42,16 +52,17 @@ const Comment: React.FC<CommentProps> = ({ author, text, onDelete, onReply, onDe
             type="text"
             placeholder="Your name"
             value={replyAuthor}
-            onChange={e => setReplyAuthor(e.target.value)}
+            onChange={e => setReplyAuthor(validateInput(e.target.value, 40))}
             required
           />
           <textarea
             placeholder="Your reply"
             value={replyText}
-            onChange={e => setReplyText(e.target.value)}
+            onChange={e => setReplyText(validateInput(e.target.value, 300))}
             required
           />
-          <button type="submit">Add Reply</button>
+          {replyError && <div className="rate-limit-error" style={{ color: 'red', marginBottom: 8 }}>{replyError}</div>}
+          <button type="submit" disabled={!!replyError}>Add Reply</button>
         </form>
       )}
       {replies.length > 0 && (

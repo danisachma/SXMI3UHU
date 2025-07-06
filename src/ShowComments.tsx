@@ -13,10 +13,18 @@ interface ShowCommentsProps {
   comments: CommentType[];
 }
 
+const COMMENT_RATE_LIMIT = 5; // max 5 comments
+const COMMENT_RATE_WINDOW_MS = 60 * 1000; // per minute
+const REPLY_RATE_LIMIT = 5; // max 5 replies
+const REPLY_RATE_WINDOW_MS = 60 * 1000; // per minute
+
 const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
   const [commentList, setCommentList] = useState<CommentType[]>(comments);
   const [author, setAuthor] = useState('');
   const [text, setText] = useState('');
+  const [commentTimestamps, setCommentTimestamps] = useState<number[]>([]);
+  const [rateLimitError, setRateLimitError] = useState<string | null>(null);
+  const [replyTimestamps, setReplyTimestamps] = useState<number[]>([]);
 
   useEffect(() => {
     getAllComments().then(dbComments => {
@@ -54,13 +62,22 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
 
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
+    const now = Date.now();
+    // Remove timestamps older than 1 minute
+    const recentTimestamps = commentTimestamps.filter(ts => now - ts < COMMENT_RATE_WINDOW_MS);
+    if (recentTimestamps.length >= COMMENT_RATE_LIMIT) {
+      setRateLimitError('You can only add 5 comments per minute. Please wait.');
+      return;
+    }
+    setRateLimitError(null);
     if (!author.trim() || !text.trim()) return;
     const newComment = {
-      id: Date.now(),
+      id: now,
       author,
       text
     };
     setCommentList([...commentList, newComment]);
+    setCommentTimestamps([...recentTimestamps, now]);
     setAuthor('');
     setText('');
   };
@@ -72,12 +89,21 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     }
   };
 
-  const handleReplyToComment = (id: number, reply: { author: string; text: string }) => {
+  const handleReplyToComment = (id: number, reply: { author: string; text: string }, setReplyError: (msg: string | null) => void) => {
+    const now = Date.now();
+    const recentReplyTimestamps = replyTimestamps.filter(ts => now - ts < REPLY_RATE_WINDOW_MS);
+    if (recentReplyTimestamps.length >= REPLY_RATE_LIMIT) {
+      setReplyError('You can only add 5 replies per minute. Please wait.');
+      return false;
+    }
+    setReplyError(null);
     setCommentList(commentList.map(comment =>
       comment.id === id
         ? { ...comment, replies: [...(comment.replies || []), reply] }
         : comment
     ));
+    setReplyTimestamps([...recentReplyTimestamps, now]);
+    return true;
   };
 
   const handleDeleteReply = (commentId: number, replyIdx: number) => {
@@ -93,6 +119,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
   return (
     <div>
       <h1>Comments</h1>
+      {rateLimitError && <div className="rate-limit-error" style={{ color: 'red', marginBottom: 8 }}>{rateLimitError}</div>}
       <form onSubmit={handleAddComment} className="comment-form">
         <input
           type="text"
@@ -116,7 +143,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
             author={comment.author}
             text={comment.text}
             onDelete={() => handleDeleteComment(comment.id)}
-            onReply={reply => handleReplyToComment(comment.id, reply)}
+            onReply={(reply, setReplyError) => handleReplyToComment(comment.id, reply, setReplyError)}
             replies={comment.replies || []}
             onDeleteReply={(replyIdx: number) => handleDeleteReply(comment.id, replyIdx)}
           />
