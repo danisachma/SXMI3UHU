@@ -28,6 +28,30 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
     saveAllComments(commentList);
   }, [commentList]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getAllComments().then(dbComments => {
+        // Compare not only by id/length, but also by replies content
+        const isDifferent =
+          dbComments.length !== commentList.length ||
+          dbComments.some((c, i) => {
+            const current = commentList[i];
+            if (!current || c.id !== current.id) return true;
+            const cReplies = c.replies || [];
+            const currentReplies = current.replies || [];
+            if (cReplies.length !== currentReplies.length) return true;
+            return cReplies.some((r: { author: string; text: string }, idx: number) =>
+              r.author !== currentReplies[idx]?.author || r.text !== currentReplies[idx]?.text
+            );
+          });
+        if (isDifferent) {
+          setCommentList(dbComments);
+        }
+      });
+    }, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
+  }, [commentList]);
+
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!author.trim() || !text.trim()) return;
