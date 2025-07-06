@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Comment from './Comment';
+import { getAllComments, saveAllComments, deleteCommentFromDB } from './db';
 
 interface CommentType {
   id: number;
@@ -17,6 +18,16 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
   const [author, setAuthor] = useState('');
   const [text, setText] = useState('');
 
+  useEffect(() => {
+    getAllComments().then(dbComments => {
+      if (dbComments.length > 0) setCommentList(dbComments);
+    });
+  }, []);
+
+  useEffect(() => {
+    saveAllComments(commentList);
+  }, [commentList]);
+
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!author.trim() || !text.trim()) return;
@@ -33,6 +44,7 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
   const handleDeleteComment = (id: number) => {
     if (window.confirm('Are you sure you want to delete this comment?')) {
       setCommentList(commentList.filter(c => c.id !== id));
+      deleteCommentFromDB(id);
     }
   };
 

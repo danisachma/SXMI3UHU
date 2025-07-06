@@ -3,10 +3,21 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ShowComments from './ShowComments';
 
+jest.mock('./db', () => ({
+	getAllComments: jest.fn(() => Promise.resolve([])),
+	saveAllComments: jest.fn(() => Promise.resolve()),
+	deleteCommentFromDB: jest.fn(() => Promise.resolve()),
+}));
+
 const mockComments = [
 	{ id: 1, author: 'Alice', text: 'Great project!' },
 	{ id: 2, author: 'Bob', text: 'Looking forward to more features.' },
 ];
+
+beforeEach(() => {
+	jest.clearAllMocks();
+	require('./db').getAllComments.mockImplementation(() => Promise.resolve([]));
+});
 
 test('renders the list of comments', () => {
 	render(<ShowComments comments={mockComments} />);
