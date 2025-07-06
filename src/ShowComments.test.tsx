@@ -92,7 +92,7 @@ test('allows a comment to be deleted after confirming', async () => {
   await userEvent.click(deleteButtons[0]);
 
   // Wait for the comment to be removed
-  expect(await screen.queryByText('Alice:')).not.toBeInTheDocument();
+  expect(screen.queryByText('Alice:')).not.toBeInTheDocument();
 
   (window.confirm as jest.Mock).mockRestore();
 });
