@@ -22,6 +22,11 @@ function isValidUsername(name: string) {
   return !!name && !/\s/.test(name);
 }
 
+function sanitizeInput(str: string, maxLength: number = 300) {
+  // Remove control characters except newlines, trim, and limit length
+  return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim().slice(0, maxLength);
+}
+
 const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
   const [commentList, setCommentList] = useState<CommentType[]>(comments);
   const [author, setAuthor] = useState('');
@@ -75,10 +80,12 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
       setRateLimitError('Usernames cannot contain spaces.');
       return;
     }
+    const sanitizedAuthor = sanitizeInput(author, 40);
+    const sanitizedText = sanitizeInput(text, 300);
     const newComment = {
       id: now,
-      author,
-      text
+      author: sanitizedAuthor,
+      text: sanitizedText
     };
     setCommentList([...commentList, newComment]);
     setCommentTimestamps([...recentTimestamps, now]);
@@ -110,10 +117,11 @@ const ShowComments: React.FC<ShowCommentsProps> = ({ comments }) => {
       setReplyError('Usernames cannot contain spaces.');
       return false;
     }
-    setReplyError(null);
+    const sanitizedAuthor = sanitizeInput(reply.author, 40);
+    const sanitizedText = sanitizeInput(reply.text, 300);
     const updatedList = commentList.map(comment =>
       comment.id === id
-        ? { ...comment, replies: [...(comment.replies || []), { author: reply.author, text: reply.text }] }
+        ? { ...comment, replies: [...(comment.replies || []), { author: sanitizedAuthor, text: sanitizedText }] }
         : comment
     );
     setCommentList(updatedList);
